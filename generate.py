@@ -1,5 +1,7 @@
 from typing import List, Tuple, Set
 from datetime import date, timedelta
+from pathlib import PurePath
+import shutil
 
 mask = {0, 1, 2, 3, 4, 5, 6}
 
@@ -21,7 +23,9 @@ def write_html(filename: str, title: str, event_ID: str, place_order: List[str],
 		content = file.read()
 	output = content.format(title = title, event_ID = event_ID, place_order = ', '.join(f"'{s}'" for s in place_order), 
 		dates = ',\n\t\t\t'.join(f'new Date(Date.UTC({d.year}, {d.month - 1}, {d.day}))' for d in give_newdate(l, weekday)))
-	with open(filename, 'w', newline = '\n', encoding = 'utf-8') as file:
+	p = PurePath(filename)
+	shutil.copy('template.js', p.parent)
+	with open(p, 'w', newline = '\n', encoding = 'utf-8') as file:
 		file.write(output)
 
 if __name__ == '__main__':
