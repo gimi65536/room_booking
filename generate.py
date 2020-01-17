@@ -1,4 +1,4 @@
-from typing import List, Tuple, Set
+﻿from typing import List, Tuple, Set
 from datetime import date, timedelta
 from pathlib import PurePath
 import shutil
@@ -18,11 +18,14 @@ def give_newdate(l: List[Tuple[date, date]], weekday: Set[int], iso = True):
 		sol.extend(pick_date)
 	return sol
 
-def write_html(filename: str, title: str, event_ID: str, place_order: List[str], l: List[Tuple[date, date]], weekday: Set[int]):
+def write_html(filename: str, title: str, event_ID: str, place_order: List[str], l: List[Tuple[date, date]], weekday: Set[int], printout: bool = False):
 	with open('template', 'r', newline = '', encoding = 'utf-8') as file:
 		content = file.read()
 	output = content.format(title = title, event_ID = event_ID, place_order = ', '.join(f"'{s}'" for s in place_order), 
 		dates = ',\n\t\t\t'.join(f'new Date(Date.UTC({d.year}, {d.month - 1}, {d.day}))' for d in give_newdate(l, weekday)))
+	if printout:
+		print(output)
+		return
 	p = PurePath(filename)
 	shutil.copy('template.js', p.parent)
 	with open(p, 'w', newline = '\n', encoding = 'utf-8') as file:
@@ -42,6 +45,7 @@ if __name__ == '__main__':
 			e.g. {1} 代表從日期區間內挑出星期一
 			     {3, 5} 代表從日期區間內挑出星期三與星期五
 			     星期日是7
+		printout: 是否直接將網頁原始碼輸出到終端，預設為False
 
 	常例：
 	write_html(
@@ -69,25 +73,33 @@ if __name__ == '__main__':
 		weekday = {2})
 	'''
 	write_html(
-		filename = '107_4/chuangzuo.html',
+		filename = '108_1/chuangzuo.html',
 		title = '創作組',
-		event_ID = '98652',
+		event_ID = '104319',
 		place_order = ['103', '104', '202'],
-		l = [(date(2019, 4, 15), date(2019, 6, 23))],
+		l = [(date(2020, 2, 17), date(2020, 4, 12))],
 		weekday = {5})
 
 	write_html(
-		filename = '107_4/qimosheda.html',
-		title = '期末社大',
-		event_ID = '98653',
+		filename = '108_1/qimosheda.html',
+		title = '期初社大',
+		event_ID = '104323',
 		place_order = ['103', '104', '202'],
-		l = [(date(2019, 6, 3), date(2019, 6, 14))],
-		weekday = {1, 3})
+		l = [(date(2020, 2, 17), date(2020, 3, 6))],
+		weekday = {1})
 
 	write_html(
-		filename = '107_4/jiaoxue.html',
+		filename = '108_1/jiaoxue.html',
 		title = '教學組',
-		event_ID = '98655',
+		event_ID = '104324',
 		place_order = ['103', '104', '202', '新生102', '新生103', '新生202', '新生203', '新生204', '新生302', '新生303', '新生304'],
-		l = [(date(2019, 4, 22), date(2019, 6, 14))],
-		weekday = {2})
+		l = [(date(2020, 2, 17), date(2020, 4, 12))],
+		weekday = {2, 3})
+
+	write_html(
+		filename = '108_1/zhou.html',
+		title = '卡漫周',
+		event_ID = '104322',
+		place_order = ['103', '104', '202'],
+		l = [(date(2020, 3, 23), date(2020, 3, 27))],
+		weekday = {1, 2, 3, 4, 5})
