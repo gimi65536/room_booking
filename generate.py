@@ -27,7 +27,10 @@ def write_html(filename: str, title: str, event_ID: str, place_order: List[str],
 		print(output)
 		return
 	p = PurePath(filename)
-	shutil.copy('template.js', p.parent)
+	try:
+		shutil.copy('template.js', p.parent)
+	except:
+		pass
 	with open(p, 'w', newline = '\n', encoding = 'utf-8') as file:
 		file.write(output)
 
