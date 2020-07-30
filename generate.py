@@ -1,4 +1,4 @@
-﻿from typing import List, Tuple, Set
+from typing import List, Tuple, Set
 from datetime import date, timedelta
 from pathlib import PurePath
 import shutil
@@ -34,45 +34,44 @@ def write_html(filename: str, title: str, event_ID: str, place_order: List[str],
 	with open(p, 'w', newline = '\n', encoding = 'utf-8') as file:
 		file.write(output)
 
-if __name__ == '__main__':
-	'''
-	write_html: 呼叫一次，就會生成一個網頁
-		filename: 網頁檔案名稱，對應到網址。如果檔名包含資料夾，注意要先創好資料夾
-		title: 網頁標題
-		event_ID: 活動ID
-		place_order: 一個list，裡頭裝著由引號包著的教室名稱。教室名稱總覽在template.js的place_map變數中
-		l: 一個list，list裡頭有若干個2-tuple，2-tuple裝著兩個日期，代表時間區間的開頭與結尾（閉區間，包含頭尾兩個日期）
-			e.g. [(date(2019, 1, 1), date(2019, 6, 4))] 代表從2019年1月1日到2019年6月4日之間的日期之間挑日期
-			     [(date(2019, 1, 1), date(2019, 3, 4)), (date(2019, 4, 1), date(2019, 6, 4))] 代表從2019/1/1~2019/3/4以及2019/4/1~2019/6/4這兩個區間內挑日期
-		weekday: 一個set（用{}來包），代表要從日期區間之內挑出星期幾
-			e.g. {1} 代表從日期區間內挑出星期一
-			     {3, 5} 代表從日期區間內挑出星期三與星期五
-			     星期日是7
-		printout: 是否直接將網頁原始碼輸出到終端，預設為False
+'''
+write_html: 呼叫一次，就會生成一個網頁
+	filename: 網頁檔案名稱，對應到網址。如果檔名包含資料夾，注意要先創好資料夾
+	title: 網頁標題
+	event_ID: 活動ID
+	place_order: 一個list，裡頭裝著由引號包著的教室名稱。教室名稱總覽在template.js的place_map變數中
+	l: 一個list，list裡頭有若干個2-tuple，2-tuple裝著兩個日期，代表時間區間的開頭與結尾（閉區間，包含頭尾兩個日期）
+		e.g. [(date(2019, 1, 1), date(2019, 6, 4))] 代表從2019年1月1日到2019年6月4日之間的日期之間挑日期
+		     [(date(2019, 1, 1), date(2019, 3, 4)), (date(2019, 4, 1), date(2019, 6, 4))] 代表從2019/1/1~2019/3/4以及2019/4/1~2019/6/4這兩個區間內挑日期
+	weekday: 一個set（用{}來包），代表要從日期區間之內挑出星期幾
+		e.g. {1} 代表從日期區間內挑出星期一
+		     {3, 5} 代表從日期區間內挑出星期三與星期五
+		     星期日是7
+	printout: 是否直接將網頁原始碼輸出到終端，預設為False
 
-	常例：
-	write_html(
-		filename = '107_4/chuangzuo.html',
-		title = '創作組',
-		event_ID = '98652',
-		place_order = ['103', '104', '202'],
-		l = [(date(2019, 4, 15), date(2019, 6, 23))],
-		weekday = {5})
+常例：
+write_html(
+	filename = '107_4/chuangzuo.html',
+	title = '創作組',
+	event_ID = '98652',
+	place_order = ['103', '104', '202'],
+	l = [(date(2019, 4, 15), date(2019, 6, 23))],
+	weekday = {5})
 
-	write_html(
-		filename = '107_4/qimosheda.html',
-		title = '期末社大',
-		event_ID = '98653',
-		place_order = ['103', '104', '202'],
-		l = [(date(2019, 6, 3), date(2019, 6, 14))],
-		weekday = {1, 3})
+write_html(
+	filename = '107_4/qimosheda.html',
+	title = '期末社大',
+	event_ID = '98653',
+	place_order = ['103', '104', '202'],
+	l = [(date(2019, 6, 3), date(2019, 6, 14))],
+	weekday = {1, 3})
 
-	write_html(
-		filename = '107_4/jiaoxue.html',
-		title = '教學組',
-		event_ID = '98655',
-		place_order = ['103', '104', '202', '新生102', '新生103', '新生202', '新生203', '新生204', '新生302', '新生303', '新生304'],
-		l = [(date(2019, 4, 22), date(2019, 6, 14))],
-		weekday = {2})
-	'''
-	#請從下一行開始寫
+write_html(
+	filename = '107_4/jiaoxue.html',
+	title = '教學組',
+	event_ID = '98655',
+	place_order = ['103', '104', '202', '新生102', '新生103', '新生202', '新生203', '新生204', '新生302', '新生303', '新生304'],
+	l = [(date(2019, 4, 22), date(2019, 6, 14))],
+	weekday = {2})
+'''
+#請從下一行開始寫
