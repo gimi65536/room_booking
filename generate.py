@@ -72,34 +72,4 @@ if __name__ == '__main__':
 		l = [(date(2019, 4, 22), date(2019, 6, 14))],
 		weekday = {2})
 	'''
-	write_html(
-		filename = '108_1/chuangzuo.html',
-		title = '創作組',
-		event_ID = '104319',
-		place_order = ['103', '104', '202'],
-		l = [(date(2020, 2, 17), date(2020, 4, 12))],
-		weekday = {5})
-
-	write_html(
-		filename = '108_1/qimosheda.html',
-		title = '期初社大',
-		event_ID = '104323',
-		place_order = ['103', '104', '202'],
-		l = [(date(2020, 2, 17), date(2020, 3, 6))],
-		weekday = {1})
-
-	write_html(
-		filename = '108_1/jiaoxue.html',
-		title = '教學組',
-		event_ID = '104324',
-		place_order = ['103', '104', '202', '新生102', '新生103', '新生202', '新生203', '新生204', '新生302', '新生303', '新生304'],
-		l = [(date(2020, 2, 17), date(2020, 4, 12))],
-		weekday = {2, 3})
-
-	write_html(
-		filename = '108_1/zhou.html',
-		title = '卡漫周',
-		event_ID = '104322',
-		place_order = ['103', '104', '202'],
-		l = [(date(2020, 3, 23), date(2020, 3, 27))],
-		weekday = {1, 2, 3, 4, 5})
+	#請從下一行開始寫
