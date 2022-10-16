@@ -7,11 +7,11 @@
 	<script type="text/javascript" src="template.js"></script>
 	<script type="text/javascript">
 		//define variables of this page
-		var title = "{title}";
-		var event_ID = {event_ID};
-		var place_order = [{place_order}];
+		let title = "{title}";
+		let event_ID = {event_ID};
+		let place_order = [{place_order}];
 		//第二個參數 8 是指九月，9 是指十月！
-		var dates = [
+		let dates = [
 			{dates}
 		];
 	</script>
