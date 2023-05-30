@@ -13,6 +13,7 @@ import {
 	ListItemIcon,
 	ListItemSecondaryAction,
 	ListItemText,
+	Stack,
 	TextField,
 	Tooltip
 } from '@mui/material';
@@ -54,6 +55,10 @@ function MyDatePicker(params){
 			<DatePicker {...params} />
 		</LocalizationProvider>
 	);
+}
+
+function ButtonInDatePick({children, ...props}){
+	return <Button sx={{m: 1}} {...props}>{children}</Button>;
 }
 
 export default function Generator({ bookUrl = '/' }) {
@@ -182,7 +187,7 @@ export default function Generator({ bookUrl = '/' }) {
 				label="活動ID"
 				inputRef={idRef}
 			/>
-			<div>
+			<Stack>
 				<h2>選擇場地與時間</h2>
 				<List>
 					{position.map((info, index) => {
@@ -242,8 +247,8 @@ export default function Generator({ bookUrl = '/' }) {
 						<AddIcon />
 					</IconButton>
 				</div>
-			</div>
-			<div>
+			</Stack>
+			<Stack>
 				<h2>選擇日期</h2>
 				{dates.length > 0 ?
 					<List>
@@ -269,7 +274,7 @@ export default function Generator({ bookUrl = '/' }) {
 							);
 						})}
 					</List>
-					: <p>尚未選取任何日期</p>
+					: <Box sx={{ fontWeight: 'bold', color: 'red' }}><p>尚未選取任何日期</p></Box>
 				}
 				<div>
 					<div>
@@ -278,11 +283,23 @@ export default function Generator({ bookUrl = '/' }) {
 							label="日期一"
 							value={date[0]}
 							onChange={(newDate) => { setDate([getUTCDate(newDate), date[1]]); }}
+							slotProps={{
+								textField: {
+									helperText: '這是「日期一」',
+								},
+							}}
+							sx={{ m: 1 }}
 						/>
 						<MyDatePicker
 							label="日期二"
 							value={date[1]}
 							onChange={(newDate) => { setDate([date[0], getUTCDate(newDate)]); }}
+							slotProps={{
+								textField: {
+									helperText: '這是「日期二」',
+								},
+							}}
+							sx={{ m: 1 }}
 						/>
 					</div>
 					<div>
@@ -300,68 +317,68 @@ export default function Generator({ bookUrl = '/' }) {
 					</div>
 					<div>
 						<div>
-							<Button
+							<ButtonInDatePick
 								variant="contained"
 								startIcon={<Filter1Icon />}
 								onClick={() => handleAddDate(date[0])}
 							>
 								新增「日期一」
-							</Button>
-							<Button
+							</ButtonInDatePick>
+							<ButtonInDatePick
 								variant="contained"
 								startIcon={<Filter2Icon />}
 								onClick={() => handleAddDate(date[1])}
 							>
 								新增「日期二」
-							</Button>
-							<Button
+							</ButtonInDatePick>
+							<ButtonInDatePick
 								variant="contained"
 								startIcon={<AddIcon />}
 								onClick={() => handleDateInterval(true)}
 							>
 								新增日期區間
-							</Button>
+							</ButtonInDatePick>
 						</div>
 						<div>
-							<Button
+							<ButtonInDatePick
 								variant="contained"
 								color="warning"
 								startIcon={<Filter1Icon />}
 								onClick={() => { handleDeleteDate(date[0]) }}
 							>
 								刪除「日期一」
-							</Button>
-							<Button
+							</ButtonInDatePick>
+							<ButtonInDatePick
 								variant="contained"
 								color="warning"
 								startIcon={<Filter2Icon />}
 								onClick={() => { handleDeleteDate(date[1]) }}
 							>
 								刪除「日期二」
-							</Button>
-							<Button
+							</ButtonInDatePick>
+							<ButtonInDatePick
 								variant="contained"
 								color="warning"
 								startIcon={<DeleteIcon />}
 								onClick={() => handleDateInterval(false)}
 							>
 								刪除日期區間
-							</Button>
+							</ButtonInDatePick>
 						</div>
 						<Tooltip title={dateIntervalHelp}>
-							<Button
+							<ButtonInDatePick
 								variant="contained"
 								color="secondary"
 								startIcon={<HelpOutlineIcon />}
 								onClick={() => alert(dateIntervalHelp)}
 							>
 								何謂「日期區間」
-							</Button>
+							</ButtonInDatePick>
 						</Tooltip>
 					</div>
 				</div>
-			</div>
-			<div>
+			</Stack>
+			<Stack sx={{ alignItems: "center" }}>
 				<h2>祕笈生成</h2>
 				<Button
 					variant="contained"
@@ -435,7 +452,7 @@ export default function Generator({ bookUrl = '/' }) {
 					</List>
 					: <p>尚未生成任何祕笈</p>
 				}
-			</div>
+			</Stack>
 		</>
 	)
 }
