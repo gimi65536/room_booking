@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import {
+	Box,
 	Button,
 	Checkbox,
 	FormControlLabel,
@@ -154,7 +155,7 @@ export default function Generator({ bookUrl = '/' }) {
 		updatedGenerated((draft) => {
 			draft.push({
 				title: titleRef.current.value,
-				eventID: idRef.current.value,
+				eventID: idRef.current.value.trim(),
 				// Use toArray() for Immutable.OrderedSet to receive array instead of another OrderedSet.
 				positions: chosenPosition.toArray().map((index) => position[index]),
 				// Convert into YYYY-MM-DD to serialize
@@ -385,6 +386,26 @@ export default function Generator({ bookUrl = '/' }) {
 								params.append('pEnd', p.end);
 							});
 							const url = bookUrl + '?' + params.toString();
+
+							const problems = [];
+							if(generatedObj.eventID.length === 0){
+								problems.push("活動代碼為空");
+							}
+							if(generatedObj.dates.length === 0){
+								problems.push("日期為空，是否忘記點選「新增日期區間」？");
+							}
+							if(generatedObj.positions.length === 0) {
+								problems.push("場地為空");
+							}
+							let secondary = `活動代碼${generatedObj.eventID} 場地[${positionsStr}] 日期[${datesStr}]`;
+							if(problems.length > 0){
+								secondary = (<div>
+									<p>{secondary}</p>
+									<Box sx={{ color: 'red' }}>
+									{problems.map((problem, index) => (<p key={index}>{problem}</p>))}
+									</Box>
+								</div>);
+							}
 							return (
 								<ListItem
 									key={index}
@@ -395,7 +416,7 @@ export default function Generator({ bookUrl = '/' }) {
 										>
 											<ListItemText
 												primary={generatedObj.title ? generatedObj.title : "（無標題）"}
-												secondary={`活動代碼${generatedObj.eventID} 場地[${positionsStr}] 日期[${datesStr}]`}
+												secondary={secondary}
 											/>
 										</ListItemButton>
 									</Tooltip>
