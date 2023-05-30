@@ -1,0 +1,28 @@
+:root {
+  --border-width: 1px;
+  --border-style: solid;
+}
+
+@media (max-width: 1200px) {
+  body {
+    width: max-width;
+  }
+}
+
+@media (min-width: 1201px) {
+  body {
+    width: 1200px;
+    margin: 0 auto;
+  }
+}
+
+h1,
+h2 {
+  text-align: center;
+}
+
+dl {
+  margin: auto;
+  max-width: 800px;
+  line-height: 150%;
+}

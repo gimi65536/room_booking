@@ -1,0 +1,31 @@
+{
+  "name": "room_booking",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.11.0",
+    "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.11.16",
+    "@mui/material": "^5.13.2",
+    "@mui/x-date-pickers": "^6.5.0",
+    "collections": "^5.1.13",
+    "dayjs": "^1.11.7",
+    "eslint": "8.41.0",
+    "eslint-config-next": "13.4.4",
+    "immer": "^10.0.2",
+    "immutable": "^4.3.0",
+    "next": "13.4.4",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "use-immer": "^0.9.0"
+  },
+  "devDependencies": {
+    "json5-loader": "^4.0.1"
+  }
+}
