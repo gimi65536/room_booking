@@ -421,13 +421,13 @@ export default function Generator({ bookUrl = '/' }) {
 										</ListItemButton>
 									</Tooltip>
 									<ListItemSecondaryAction>
-										<Tooltip title="前往">
-											<Link href={url} rel="noopener noreferrer" target="_blank">
+										<Link href={url} rel="noopener noreferrer" target="_blank">
+											<Tooltip title="前往">
 												<IconButton>
 													<SubdirectoryArrowRightIcon />
 												</IconButton>
-											</Link>
-										</Tooltip>
+											</Tooltip>
+										</Link>
 									</ListItemSecondaryAction>
 								</ListItem>
 							);
