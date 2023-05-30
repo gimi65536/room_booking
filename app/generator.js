@@ -1,4 +1,5 @@
 'use client';
+import Link from 'next/link';
 import {
 	Button,
 	Checkbox,
@@ -9,6 +10,7 @@ import {
 	ListItem,
 	ListItemButton,
 	ListItemIcon,
+	ListItemSecondaryAction,
 	ListItemText,
 	TextField,
 	Tooltip
@@ -18,26 +20,30 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import Filter1Icon from '@mui/icons-material/Filter1';
 import Filter2Icon from '@mui/icons-material/Filter2';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import SubdirectoryArrowRightIcon from '@mui/icons-material/SubdirectoryArrowRight';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { useCallback, useRef, useState } from 'react';
 import { useImmer } from "use-immer";
-import { enableMapSet } from "immer";
+import { OrderedSet } from 'immutable';
 import SortedSet from "collections/sorted-set";
 import dayjs from 'dayjs';
 import 'dayjs/locale/zh-tw';
-// import utcPlugin from 'dayjs/plugin/utc';
+import localizeFormatPlugin from 'dayjs/plugin/localizedFormat';
+// import timezonePlugin from 'dayjs/plugin/timezone';
 // import localeDataPlugin from 'dayjs/plugin/localeData';
 import isBetweenPlugin from 'dayjs/plugin/isBetween';
+import { getUTCDate } from './utcdate';
 import Position from "@/position.json5";
 
 // Global initialization
-enableMapSet();
 dayjs.locale('zh-tw');
-// dayjs.extend(utcPlugin);
+dayjs.extend(localizeFormatPlugin);
+// dayjs.extend(timezonePlugin);
 // dayjs.extend(localeDataPlugin);
 dayjs.extend(isBetweenPlugin);
+// dayjs.tz.setDefault('Etc/UTC');
 
 const dateIntervalHelp = '「日期一」與「日期二」之間符合「星期幾」的所有日子';
 
@@ -49,27 +55,30 @@ function MyDatePicker(params){
 	);
 }
 
-export default function Generator() {
+export default function Generator({ bookUrl = '/' }) {
 	// If the types of the input value is trivial (i.e., string, boolean, etc.) then using refs
 	// Otherwise (like Date/Moment/Dayjs), use states
 	const titleRef = useRef(null);
 	const idRef = useRef(null);
 	const [position, updatePosition] = useImmer(Position);
-	const [chosenPosition, updateChosenPosition] = useImmer(new Set()); // Array of indexes
-	const [dates, setDates] = useState(new SortedSet()); // Set of dayjs (instead of Dates)
-	const [date, setDate] = useState([dayjs(), dayjs()]);
+	const [chosenPosition, setChosenPosition] = useState(OrderedSet()); // Set of indexes
+	const [dates, setDates] = useState(new SortedSet()); // Set of dayjs (instead of Dates) (UTC dates with 00:00:00)
 
 	// Sub-form
 	const newPositionRef = useRef({});
+	const [date, setDate] = useState([getUTCDate(dayjs()), getUTCDate(dayjs())]); // Two UTC dates with 00:00:00
 	const weekdayRef = useRef({});
+
+	// Generated
+	const [generated, updatedGenerated] = useImmer([]);
 
 	const handleTogglePosition = useCallback((index) => {
 		if (chosenPosition.has(index)) {
-			updateChosenPosition((draft) => { draft.delete(index) });
+			setChosenPosition(chosenPosition.remove(index));
 		} else {
-			updateChosenPosition((draft) => { draft.add(index) });
+			setChosenPosition(chosenPosition.add(index));
 		}
-	}, [chosenPosition, updateChosenPosition]);
+	}, [chosenPosition, setChosenPosition]);
 
 	const handleNewPosition = useCallback(() => {
 		const newPosition = {
@@ -86,24 +95,19 @@ export default function Generator() {
 		updatePosition((draft) => { draft.push(newPosition) });
 	}, [updatePosition])
 
+	// @pre: date is a UTC date
 	const handleDeleteDate = useCallback((date) => {
-		if(dates.has(date)){
-			const newDates = dates.clone();
-			newDates.delete(date);
-			setDates(newDates);
+		// Use SortedSet#clone will ruin data in the set.
+		// Use constructClone or (union/difference) instead.
+		if (dates.has(date)){
+			setDates(dates.difference([date]));
 		}
 	}, [dates]);
 
+	// @pre: date is a UTC date
 	const handleAddDate = useCallback((date) => {
-		if(!dates.has(date)) {
-			const newDates = dates.clone();
-			newDates.push(date);
-			setDates(newDates);
-			console.log({
-				date,
-				dates,
-				newDates
-			})
+		if (!dates.has(date)){
+			setDates(dates.union([date]));
 		}
 	}, [dates]);
 
@@ -146,6 +150,19 @@ export default function Generator() {
 		}
 	}, [date, dates]);
 
+	const handleGenerate = () => {
+		updatedGenerated((draft) => {
+			draft.push({
+				title: titleRef.current.value,
+				eventID: idRef.current.value,
+				// Use toArray() for Immutable.OrderedSet to receive array instead of another OrderedSet.
+				positions: chosenPosition.toArray().map((index) => position[index]),
+				// Convert into YYYY-MM-DD to serialize
+				dates: dates.map((date) => date.format('YYYY-MM-DD'))
+			})
+		});
+	};
+
 	return (
 		<>
 			<h1>搶場祕笈生成器</h1>
@@ -155,7 +172,6 @@ export default function Generator() {
 				name="title"
 				label="標題"
 				placeholder="教學組 etc."
-				required={true}
 				inputRef={titleRef}
 			/>
 			<h2>活動ID</h2>
@@ -163,7 +179,6 @@ export default function Generator() {
 				type="text"
 				name="eventID"
 				label="活動ID"
-				required={true}
 				inputRef={idRef}
 			/>
 			<div>
@@ -229,45 +244,44 @@ export default function Generator() {
 			</div>
 			<div>
 				<h2>選擇日期</h2>
-				<List>
-					{dates.map((date) => {
-						// const dateString = date.format("YYYY-MM-DD");
-						const dateString = date.toString();
-						return (
-							<ListItem
-								key={dateString}
-								secondaryAction={
-									<IconButton
-										aria-label={`delete ${dateString}`}
-										onClick={() => handleDeleteDate(date)}
-									>
-										<DeleteIcon />
-									</IconButton>
-								}
-							>
-								<ListItemText
-									primary={date.toString()}
-									secondary={date.toString()}
-								/>
-							</ListItem>
-						);
-					})}
-				</List>
+				{dates.length > 0 ?
+					<List>
+						{dates.map((date) => {
+							const dateString = date.format("YYYY-MM-DD");
+							return (
+								<ListItem
+									key={dateString}
+								>
+									<ListItemText
+										primary={date.format('ll')}
+										secondary={date.format('dddd')}
+									/>
+									<ListItemSecondaryAction>
+										<IconButton
+											aria-label={`delete ${dateString}`}
+											onClick={() => handleDeleteDate(date)}
+										>
+											<DeleteIcon />
+										</IconButton>
+									</ListItemSecondaryAction>
+								</ListItem>
+							);
+						})}
+					</List>
+					: <p>尚未選取任何日期</p>
+				}
 				<div>
 					<div>
-						<h3>日期一</h3>
+						<h3>日期</h3>
 						<MyDatePicker
 							label="日期一"
 							value={date[0]}
-							onChange={(newDate) => { setDate([newDate, date[1]]); }}
+							onChange={(newDate) => { setDate([getUTCDate(newDate), date[1]]); }}
 						/>
-					</div>
-					<div>
-						<h3>日期二</h3>
 						<MyDatePicker
 							label="日期二"
 							value={date[1]}
-							onChange={(newDate) => { setDate([date[0], newDate]); }}
+							onChange={(newDate) => { setDate([date[0], getUTCDate(newDate)]); }}
 						/>
 					</div>
 					<div>
@@ -345,6 +359,61 @@ export default function Generator() {
 						</Tooltip>
 					</div>
 				</div>
+			</div>
+			<div>
+				<h2>祕笈生成</h2>
+				<Button
+					variant="contained"
+					onClick={handleGenerate}
+				>
+					按此生成
+				</Button>
+				{generated.length > 0 ?
+					<List>
+						{generated.map((generatedObj, index) => {
+							const positionsStr = generatedObj.positions.map((p) => p.name).join(',');
+							const datesStr = generatedObj.dates.join(',');
+							const params = new URLSearchParams();
+							params.append('title', generatedObj.title);
+							params.append('eventID', generatedObj.eventID);
+							generatedObj.dates.forEach((date) => params.append('dates', date));
+							// params.append('pn', generatedObj.positions.length);
+							generatedObj.positions.forEach((p) => {
+								params.append('pName', p.name);
+								params.append('pID', p.id);
+								params.append('pStart', p.start);
+								params.append('pEnd', p.end);
+							});
+							const url = bookUrl + '?' + params.toString();
+							return (
+								<ListItem
+									key={index}
+								>
+									<Tooltip title="點擊複製">
+										<ListItemButton
+											onClick={() => { navigator.clipboard.writeText(window.location.host + url) }}
+										>
+											<ListItemText
+												primary={generatedObj.title ? generatedObj.title : "（無標題）"}
+												secondary={`活動代碼${generatedObj.eventID} 場地[${positionsStr}] 日期[${datesStr}]`}
+											/>
+										</ListItemButton>
+									</Tooltip>
+									<ListItemSecondaryAction>
+										<Tooltip title="前往">
+											<Link href={url} rel="noopener noreferrer" target="_blank">
+												<IconButton>
+													<SubdirectoryArrowRightIcon />
+												</IconButton>
+											</Link>
+										</Tooltip>
+									</ListItemSecondaryAction>
+								</ListItem>
+							);
+						})}
+					</List>
+					: <p>尚未生成任何祕笈</p>
+				}
 			</div>
 		</>
 	)
